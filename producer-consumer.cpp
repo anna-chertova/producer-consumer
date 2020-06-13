@@ -1,6 +1,6 @@
 ﻿/* 
- producer-consumer.cpp: this file contains main func
- (c) 2020 Anna Chertova
+ * producer-consumer.cpp: this file contains main func
+ * (c) 2020 Anna Chertova
  */
 
 #include <iostream>
