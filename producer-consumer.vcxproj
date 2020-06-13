@@ -80,10 +80,11 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>$(SolutionDir)\bin\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)_d</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
