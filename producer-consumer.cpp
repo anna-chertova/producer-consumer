@@ -6,6 +6,7 @@
 #include <iostream>
 #include <queue>
 #include "pc_producer.h"
+#include "pc_consumer.h"
 
 // These constants to be used in a final solution
 #define NUM_PRODUCERS 1
@@ -19,6 +20,12 @@ int main()
 
     PCProducer my_producer;
     my_producer.init();
+    
+    PCConsumer my_consumer;
+    my_consumer.init();
+
     my_producer.wait();
+    my_consumer.wait();
+
     return 0;
 }

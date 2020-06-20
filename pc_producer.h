@@ -3,6 +3,7 @@
  * (c) 2020 Anna Chertova
  */
 
+#pragma once
 #include "pc_thread.h"
 
 class PCProducer : public PCThread {

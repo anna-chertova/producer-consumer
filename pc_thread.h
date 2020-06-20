@@ -2,6 +2,7 @@
  * pc_thread.h - this is a header file for my implementation for threads
  * (c) 2020 Anna Chertova
  */
+#pragma once
 #include <windows.h>
 
 class PCThread {

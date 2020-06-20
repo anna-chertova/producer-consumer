@@ -148,11 +148,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="pc_consumer.cpp" />
     <ClCompile Include="pc_producer.cpp" />
     <ClCompile Include="pc_thread.cpp" />
     <ClCompile Include="producer-consumer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="pc_consumer.h" />
     <ClInclude Include="pc_producer.h" />
     <ClInclude Include="pc_thread.h" />
   </ItemGroup>
