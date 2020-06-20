@@ -22,6 +22,11 @@ PCThread::~PCThread()
 
 int PCThread::init()
 {
+	if (handle) {
+		CloseHandle(handle);
+		handle = nullptr;
+	}
+
 	unsigned long thread_id(0L);
 	//DWORD thread_id(0);
 
