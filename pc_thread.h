@@ -13,19 +13,19 @@ public:
 	/// default versions to live on
 	PCThread();
 
-	/// TODO: think if this should be virtual? Do we want to use this class for
-	/// inheritance
 	virtual ~PCThread();
 
 	int init();
 	int wait();
 
+protected:
+
+	virtual unsigned long start();
+
 private:
 
 	HANDLE handle;
-
-	unsigned long start();
-
+	
 	static unsigned long __stdcall static_thread_start(void* param);
 	static void print_error();
 };
