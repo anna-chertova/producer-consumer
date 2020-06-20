@@ -16,8 +16,9 @@ public:
 
 	int init();
 
-	void add_item(int item);
+	bool add_item(int item);
 	int get_item();
+	int size() const;
 
 private:
 	std::queue<int> buffer;

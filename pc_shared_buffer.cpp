@@ -64,14 +64,14 @@ int PCSharedBuffer::init()
 	return 0;
 }
 
-void PCSharedBuffer::add_item(int item)
+bool PCSharedBuffer::add_item(int item)
 {
 	// lock mutex before adding item
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
 		std::cerr << "Error adding item: could not lock buffer\n";
 		PCTools::print_error();
-		return;
+		return false;
 	}
 	buffer.push(item);
 	if (buffer.size() == 1) { // if buffer was empty signal that buffer is ready to be used
@@ -82,6 +82,7 @@ void PCSharedBuffer::add_item(int item)
 	}
 	// release mutex after add is finished
 	ReleaseMutex(mutex);
+	return true;
 }
 
 int PCSharedBuffer::get_item()
@@ -113,4 +114,17 @@ int PCSharedBuffer::get_item()
 	buffer.pop();
 	ReleaseMutex(mutex);
 	return item;
+}
+
+int PCSharedBuffer::size() const
+{
+	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
+	if (wait_result != WAIT_OBJECT_0) {
+		std::cerr << "Error getting size: could not lock buffer\n";
+		PCTools::print_error();
+		return -1;
+	}
+	int cur_size = buffer.size();
+	ReleaseMutex(mutex);
+	return cur_size;
 }
