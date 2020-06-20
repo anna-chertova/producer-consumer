@@ -18,11 +18,12 @@
 int main()
 {
     PCSharedBuffer buffer;
+    buffer.init();
 
-    PCProducer my_producer;
+    PCProducer my_producer(buffer);
     my_producer.init();
     
-    PCConsumer my_consumer;
+    PCConsumer my_consumer(buffer);
     my_consumer.init();
 
     my_producer.wait();

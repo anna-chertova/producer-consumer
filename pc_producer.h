@@ -5,14 +5,18 @@
 
 #pragma once
 #include "pc_thread.h"
+#include "pc_shared_buffer.h"
 
 class PCProducer : public PCThread {
 
 public:
 
+	PCProducer(PCSharedBuffer &product_buffer);
 	virtual ~PCProducer();
 
 private:
 
 	virtual unsigned long start();
+
+	PCSharedBuffer buffer;
 };

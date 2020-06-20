@@ -6,6 +6,10 @@
 #include "pc_producer.h"
 #include <iostream>
 
+PCProducer::PCProducer(PCSharedBuffer& product_buffer): buffer(product_buffer)
+{
+}
+
 PCProducer::~PCProducer()
 {
 }

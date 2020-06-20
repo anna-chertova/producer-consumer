@@ -6,6 +6,10 @@
 #include "pc_consumer.h"
 #include <iostream>
 
+PCConsumer::PCConsumer(PCSharedBuffer& consume_buffer): buffer(consume_buffer)
+{
+}
+
 PCConsumer::~PCConsumer()
 {
 }

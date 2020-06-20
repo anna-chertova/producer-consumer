@@ -5,12 +5,15 @@
 
 #pragma once
 #include "pc_thread.h"
+#include "pc_shared_buffer.h"
 
 class PCConsumer : public PCThread {
 
 public:
+	PCConsumer(PCSharedBuffer &consume_buffer);
 	virtual ~PCConsumer();
 
 private:
 	virtual unsigned long start();
+	PCSharedBuffer buffer;
 };
