@@ -8,7 +8,7 @@
 #include "pc_shared_buffer.h"
 #include "pc_tools.h"
 
-PCSharedBuffer::PCSharedBuffer(): mutex(nullptr)
+PCSharedBuffer::PCSharedBuffer(): mutex(nullptr), ready_event(nullptr)
 {
 }
 
@@ -17,6 +17,11 @@ PCSharedBuffer::~PCSharedBuffer()
 	if (mutex) {
 		CloseHandle(mutex);
 		mutex = nullptr;
+	}
+
+	if (ready_event) {
+		CloseHandle(ready_event);
+		ready_event = nullptr;
 	}
 }
 
@@ -32,8 +37,25 @@ int PCSharedBuffer::init()
 		NULL					// unnamed
 	);
 
-	if (mutex != nullptr) {
+	if (!mutex) {
 		std::cerr << "Error creating mutex for shared buffer\n";
+		PCTools::print_error();
+		return 1;
+	}
+
+	if (ready_event) {
+		CloseHandle(ready_event);
+		ready_event = nullptr;
+	}
+
+	ready_event = CreateEvent(NULL,		// default security attributes
+		TRUE,						// manually reset event
+		FALSE,						// initital state is nonsignaled
+		TEXT("PCReadyEvent")		// name
+	);
+
+	if (!ready_event) {
+		std::cerr << "Error creating ready event for shared buffer\n";
 		PCTools::print_error();
 		return 1;
 	}
