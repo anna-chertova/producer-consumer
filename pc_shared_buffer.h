@@ -22,6 +22,8 @@ public:
 
 private:
 	std::queue<int> buffer;
-	HANDLE mutex; // mutex for protecting access to the buffer
+	HANDLE mutex;		// mutex for protecting access to the buffer
 	HANDLE ready_event; // event for signaling when buffer is ready
+
+	void cleanup();
 };

@@ -14,6 +14,11 @@ PCSharedBuffer::PCSharedBuffer(): mutex(nullptr), ready_event(nullptr)
 
 PCSharedBuffer::~PCSharedBuffer()
 {
+	cleanup();
+}
+
+void PCSharedBuffer::cleanup()
+{
 	if (mutex) {
 		ReleaseMutex(mutex);
 		CloseHandle(mutex);
@@ -28,11 +33,9 @@ PCSharedBuffer::~PCSharedBuffer()
 
 int PCSharedBuffer::init()
 {
-	if (mutex) {
-		CloseHandle(mutex);
-		mutex = nullptr;
-	}
-
+	// to avoid leaks in case of re-initialization
+	cleanup();
+	
 	mutex = CreateMutex(NULL,	// default security attributes
 		false,					// initially not owned
 		NULL					// unnamed
@@ -42,11 +45,6 @@ int PCSharedBuffer::init()
 		std::cerr << "Error creating mutex for shared buffer\n";
 		PCTools::print_error();
 		return 1;
-	}
-
-	if (ready_event) {
-		CloseHandle(ready_event);
-		ready_event = nullptr;
 	}
 
 	ready_event = CreateEvent(NULL,		// default security attributes
