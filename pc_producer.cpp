@@ -16,6 +16,19 @@ PCProducer::~PCProducer()
 
 unsigned long PCProducer::start()
 {
-	std::cout << "PCProducer::start()\n";
+	std::cout << "PCProducer::start() id = " << get_id() << "\n";
+	bool success = true;
+	while (success) {
+		int produced_item = generate_next();
+		success = buffer.add_item(produced_item);
+		std::cout << "Producer id = " << get_id() <<
+			" item = " << produced_item <<
+			" buffer size = " << buffer.size() << "\n";
+	}
+	return 0;
+}
+
+int PCProducer::generate_next()
+{
 	return 0;
 }

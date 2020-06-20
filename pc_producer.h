@@ -18,5 +18,7 @@ private:
 
 	virtual unsigned long start();
 
+	int generate_next();
+
 	PCSharedBuffer buffer;
 };
