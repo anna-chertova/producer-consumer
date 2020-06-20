@@ -14,7 +14,7 @@ public:
 	PCSharedBuffer();
 	~PCSharedBuffer();
 
-	void init();
+	int init();
 
 private:
 	std::queue<int> buffer;
