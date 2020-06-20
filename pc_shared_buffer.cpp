@@ -74,6 +74,12 @@ void PCSharedBuffer::add_item(int item)
 		return;
 	}
 	buffer.push(item);
+	if (buffer.size() == 1) { // if buffer was empty signal that buffer is ready to be used
+		if (!SetEvent(ready_event)) {
+			std::cerr << "Error signaling that buffer is not empty\n";
+			PCTools::print_error();
+		}
+	}
 	// release mutex after add is finished
 	ReleaseMutex(mutex);
 }
@@ -86,6 +92,23 @@ int PCSharedBuffer::get_item()
 		PCTools::print_error();
 		return 0;
 	}
+
+	if (buffer.size() == 0) {
+		ReleaseMutex(mutex);
+		DWORD wait_event_result = WaitForSingleObject(ready_event, INFINITE);
+		if (wait_event_result != WAIT_OBJECT_0) {
+			std::cerr << "Error getting item: could not wait for ready event\n";
+			PCTools::print_error();
+			return 0;
+		}
+		wait_result = WaitForSingleObject(mutex, INFINITE);
+		if (wait_result != WAIT_OBJECT_0) {
+			std::cerr << "Error getting item: could not lock buffer\n";
+			PCTools::print_error();
+			return 0;
+		}
+	}
+
 	int item = buffer.front();
 	buffer.pop();
 	ReleaseMutex(mutex);
