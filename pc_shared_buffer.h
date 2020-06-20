@@ -16,6 +16,9 @@ public:
 
 	int init();
 
+	void add_item(int item);
+	int get_item();
+
 private:
 	std::queue<int> buffer;
 	HANDLE mutex; // mutex for protecting access to the buffer
