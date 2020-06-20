@@ -11,7 +11,12 @@
 class PCSharedBuffer {
 
 public:
+	PCSharedBuffer();
+	~PCSharedBuffer();
+
+	void init();
 
 private:
 	std::queue<int> buffer;
+	HANDLE mutex; // mutex for protecting access to the buffer
 };

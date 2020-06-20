@@ -2,8 +2,10 @@
  * pc_thread.cpp - this is an implementation file for my threads
  * (c) 2020 Anna Chertova
  */
-#include "pc_thread.h"
 #include <iostream>
+
+#include "pc_thread.h"
+#include "pc_tools.h"
 
 PCThread::PCThread(): handle(nullptr)
 {
@@ -35,7 +37,7 @@ int PCThread::init()
 	if (handle == nullptr) {
 		// Error creating thread
 		std::cerr << "Error creating thread\n";
-		print_error();		
+		PCTools::print_error();		
 		return 1;
 	}	
 	return 0;
@@ -66,26 +68,4 @@ DWORD __stdcall PCThread::static_thread_start(void* param)
 {
 	PCThread* cur_thread = (PCThread*)param;
 	return cur_thread->start();
-}
-
-void PCThread::print_error()
-{
-	DWORD err_msg_id = GetLastError();
-	LPSTR message_buf = nullptr;
-	size_t size = FormatMessageA(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		err_msg_id,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPSTR)&message_buf,
-		0,
-		NULL);
-
-	std::string message(message_buf, size);
-
-	//Free the buffer.
-	LocalFree(message_buf);
-
-	std::cerr << message;
 }

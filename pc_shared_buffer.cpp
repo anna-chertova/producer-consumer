@@ -5,3 +5,15 @@
  */
 
 #include "pc_shared_buffer.h"
+
+PCSharedBuffer::PCSharedBuffer(): mutex(nullptr)
+{
+}
+
+PCSharedBuffer::~PCSharedBuffer()
+{
+	if (mutex) {
+		CloseHandle(mutex);
+		mutex = nullptr;
+	}
+}

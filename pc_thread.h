@@ -28,5 +28,4 @@ private:
 	HANDLE handle;
 	
 	static unsigned long __stdcall static_thread_start(void* param);
-	static void print_error();
 };
