@@ -33,15 +33,16 @@ void PCThread::cleanup()
 
 int PCThread::init()
 {
+	// to avoid leaks in case of re-initialization
 	cleanup();
 
 	handle = CreateThread(
 		nullptr,				// default security attributes
-		0,					// default stack size
-		static_thread_start,// thread function name
-		(void*)this,		// arguments to thread function
-		0,					// default creation flags
-		&thread_id			// return thread id
+		0,						// default stack size
+		static_thread_start,	// thread function name
+		(void*)this,			// arguments to thread function
+		0,						// default creation flags
+		&thread_id				// return thread id
 		);
 	
 	if (handle == nullptr) {
@@ -60,6 +61,7 @@ int PCThread::wait()
 		std::cerr << "Thread is not initialized\n";
 		return 1;
 	}
+
 	DWORD result = WaitForSingleObject(handle, INFINITE);
 	if (result != WAIT_OBJECT_0) {
 		std::cerr << "Wait failed\n";
@@ -70,7 +72,7 @@ int PCThread::wait()
 
 unsigned long PCThread::start()
 {
-	std::cout << "PCThread::start()\n";
+	//std::cout << "PCThread::start()\n";
 	return 0;
 }
 

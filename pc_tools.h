@@ -5,5 +5,6 @@
  */
 
 namespace PCTools {
+	// Prints result of GetLastError()
 	void print_error();
 }
