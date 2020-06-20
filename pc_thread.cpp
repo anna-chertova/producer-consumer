@@ -7,28 +7,33 @@
 #include "pc_thread.h"
 #include "pc_tools.h"
 
-PCThread::PCThread(): handle(nullptr)
+PCThread::PCThread(): handle(nullptr), thread_id(0L)
 {
 	
 }
 
 PCThread::~PCThread()
 {
+	cleanup();
+}
+
+unsigned long PCThread::get_id() const
+{
+	return thread_id;
+}
+
+void PCThread::cleanup()
+{
 	if (handle) {
 		CloseHandle(handle);
 		handle = nullptr;
+		thread_id = 0L;
 	}
 }
 
 int PCThread::init()
 {
-	if (handle) {
-		CloseHandle(handle);
-		handle = nullptr;
-	}
-
-	unsigned long thread_id(0L);
-	//DWORD thread_id(0);
+	cleanup();
 
 	handle = CreateThread(
 		nullptr,				// default security attributes

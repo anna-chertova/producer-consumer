@@ -18,6 +18,7 @@ public:
 
 	int init();
 	int wait();
+	unsigned long get_id() const;
 
 protected:
 
@@ -26,6 +27,9 @@ protected:
 private:
 
 	HANDLE handle;
+	DWORD thread_id;
 	
+	void cleanup();
+
 	static unsigned long __stdcall static_thread_start(void* param);
 };
