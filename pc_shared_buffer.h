@@ -20,11 +20,13 @@ public:
 	bool add_item(int item);
 	int get_item();
 	int size() const;
+	bool is_full() const;
 
 private:
 	std::queue<int> buffer;
-	HANDLE mutex;		// mutex for protecting access to the buffer
-	HANDLE ready_event; // event for signaling when buffer is ready
+	mutable HANDLE mutex;		// mutex for protecting access to the buffer
+	HANDLE read_event;			// event for signaling when buffer has data to read
+	HANDLE write_event;			// event for siganling when buffer has space for writing data
 
 	void cleanup();
 };

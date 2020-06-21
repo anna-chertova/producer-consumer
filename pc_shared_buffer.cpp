@@ -8,7 +8,7 @@
 #include "pc_shared_buffer.h"
 #include "pc_tools.h"
 
-PCSharedBuffer::PCSharedBuffer(): mutex(nullptr), ready_event(nullptr)
+PCSharedBuffer::PCSharedBuffer(): mutex(nullptr), read_event(nullptr), write_event(nullptr)
 {
 }
 
@@ -25,9 +25,14 @@ void PCSharedBuffer::cleanup()
 		mutex = nullptr;
 	}
 
-	if (ready_event) {
-		CloseHandle(ready_event);
-		ready_event = nullptr;
+	if (read_event) {
+		CloseHandle(read_event);
+		read_event = nullptr;
+	}
+
+	if (write_event) {
+		CloseHandle(write_event);
+		write_event = nullptr;
 	}
 }
 
@@ -47,14 +52,26 @@ int PCSharedBuffer::init()
 		return 1;
 	}
 
-	ready_event = CreateEvent(NULL,		// default security attributes
-		TRUE,						// manually reset event
-		FALSE,						// initital state is nonsignaled
+	read_event = CreateEvent(NULL,	// default security attributes
+		FALSE,						// auto reset event
+		FALSE,						// initial state is nonsignaled
 		TEXT("PCReadyEvent")		// name
 	);
 
-	if (!ready_event) {
-		std::cerr << "Error creating ready event for shared buffer\n";
+	if (!read_event) {
+		std::cerr << "Error creating read event for shared buffer\n";
+		PCTools::print_error();
+		return 1;
+	}
+
+	write_event = CreateEvent(NULL,
+		FALSE,
+		FALSE,
+		TEXT("PCWriteEvent")
+	);
+
+	if (!write_event) {
+		std::cerr << "Error creating write event for shared buffer\n";
 		PCTools::print_error();
 		return 1;
 	}
@@ -71,9 +88,28 @@ bool PCSharedBuffer::add_item(int item)
 		PCTools::print_error();
 		return false;
 	}
+
+	// if buffer is full, wait
+	if (buffer.size() == MAX_BUFFER_SIZE) {
+		ReleaseMutex(mutex);
+
+		DWORD wait_event_result = WaitForSingleObject(write_event, INFINITE);
+		if (wait_event_result != WAIT_OBJECT_0) {
+			std::cerr << "Error adding item: could not wait for write event\n";
+			PCTools::print_error();
+			return false;
+		}
+		wait_result = WaitForSingleObject(mutex, INFINITE);
+		if (wait_result != WAIT_OBJECT_0) {
+			std::cerr << "Error adding item: could not lock buffer\n";
+			PCTools::print_error();
+			return false;
+		}
+	}
+
 	buffer.push(item);
 	if (buffer.size() == 1) { // if buffer was empty signal that buffer is ready to be used
-		if (!SetEvent(ready_event)) {
+		if (!SetEvent(read_event)) {
 			std::cerr << "Error signaling that buffer is not empty\n";
 			PCTools::print_error();
 		}
@@ -94,9 +130,9 @@ int PCSharedBuffer::get_item()
 
 	if (buffer.size() == 0) {
 		ReleaseMutex(mutex);
-		DWORD wait_event_result = WaitForSingleObject(ready_event, INFINITE);
+		DWORD wait_event_result = WaitForSingleObject(read_event, INFINITE);
 		if (wait_event_result != WAIT_OBJECT_0) {
-			std::cerr << "Error getting item: could not wait for ready event\n";
+			std::cerr << "Error getting item: could not wait for read event\n";
 			PCTools::print_error();
 			return 0;
 		}
@@ -110,6 +146,14 @@ int PCSharedBuffer::get_item()
 
 	int item = buffer.front();
 	buffer.pop();
+
+	if (buffer.size() < MAX_BUFFER_SIZE) { // if buffer was full signal that buffer is ready to be used
+		if (!SetEvent(write_event)) {
+			std::cerr << "Error signaling that buffer is not full\n";
+			PCTools::print_error();
+		}
+	}
+
 	ReleaseMutex(mutex);
 	return item;
 }
@@ -125,4 +169,17 @@ int PCSharedBuffer::size() const
 	int cur_size = buffer.size();
 	ReleaseMutex(mutex);
 	return cur_size;
+}
+
+bool PCSharedBuffer::is_full() const
+{
+	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
+	if (wait_result != WAIT_OBJECT_0) {
+		std::cerr << "Error checking if buffer is full: could not lock buffer\n";
+		PCTools::print_error();
+		return true;
+	}
+	bool is_full = (buffer.size() == MAX_BUFFER_SIZE);
+	ReleaseMutex(mutex);
+	return is_full;
 }
