@@ -22,9 +22,7 @@ void PCTools::print_error()
 		NULL);
 
 	std::string message(message_buf, size);
-
+	std::cerr << message;
 	//Free the buffer.
 	LocalFree(message_buf);
-
-	std::cerr << message;
 }

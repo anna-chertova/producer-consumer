@@ -12,6 +12,9 @@
 
 int main()
 {
+    // allow usage of Cyrillic symbols in console
+    setlocale(0, "");
+
     PCSharedBuffer buffer;
     buffer.init();
 
