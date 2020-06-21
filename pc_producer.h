@@ -4,6 +4,8 @@
  */
 
 #pragma once
+#include <random>
+#include <functional>
 #include "pc_thread.h"
 #include "pc_shared_buffer.h"
 
@@ -21,4 +23,10 @@ private:
 	int generate_next();
 
 	PCSharedBuffer buffer;
+
+	// for producing random numbers
+	std::uniform_int_distribution<int> unif;
+	std::random_device rd;
+	std::mt19937 engine;
+	std::function<int()> rnd;
 };
