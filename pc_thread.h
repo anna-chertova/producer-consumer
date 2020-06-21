@@ -19,15 +19,18 @@ public:
 	int init();
 	int wait();
 	unsigned long get_id() const;
+	void stop();
 
 protected:
 
 	virtual unsigned long start();
+	bool is_stopped();
 
 private:
 
 	HANDLE handle;
 	DWORD thread_id;
+	HANDLE stop_event;
 	
 	void cleanup();
 

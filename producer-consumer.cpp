@@ -21,6 +21,11 @@ int main()
     PCConsumer my_consumer(buffer);
     my_consumer.init();
 
+    char a;
+    std::cin >> a;
+    my_producer.stop();
+    my_consumer.stop();
+
     my_producer.wait();
     my_consumer.wait();
 

@@ -6,8 +6,9 @@
 
 #include "pc_thread.h"
 #include "pc_tools.h"
+#include "constants.h"
 
-PCThread::PCThread(): handle(nullptr), thread_id(0L)
+PCThread::PCThread(): handle(nullptr), thread_id(0L), stop_event(nullptr)
 {
 	
 }
@@ -27,8 +28,15 @@ void PCThread::cleanup()
 	if (handle) {
 		CloseHandle(handle);
 		handle = nullptr;
-		thread_id = 0L;
+		
 	}
+
+	if (stop_event) {
+		CloseHandle(stop_event);
+		stop_event = nullptr;
+	}
+
+	thread_id = 0L;
 }
 
 int PCThread::init()
@@ -50,7 +58,22 @@ int PCThread::init()
 		std::cerr << "Error creating thread\n";
 		PCTools::print_error();		
 		return 1;
-	}	
+	}
+
+	stop_event = CreateEvent(
+		NULL,				// default security attributes
+		TRUE,				// manual reset event
+		FALSE,				// initial state is nonsignaled
+		NULL				// unnamed
+	);
+
+	if (stop_event == nullptr) {
+		// Error creating stop evetn
+		std::cerr << "Error creating stop event\n";
+		PCTools::print_error();
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -72,8 +95,30 @@ int PCThread::wait()
 
 unsigned long PCThread::start()
 {
-	//std::cout << "PCThread::start()\n";
 	return 0;
+}
+
+void PCThread::stop()
+{
+	if (!stop_event)
+		return;
+
+	if (!SetEvent(stop_event)) {
+		std::cerr << "Error stopping thread = " << thread_id << "\n";
+	}
+}
+
+bool PCThread::is_stopped()
+{
+	DWORD wait_result = WaitForSingleObject(stop_event, WAIT_TIME_MS);
+	if (wait_result == WAIT_OBJECT_0) {
+		return true;
+	}
+	if (wait_result == WAIT_FAILED) {
+		std::cerr << "Error waiting on stop event\n";
+		PCTools::print_error();
+	}
+	return false;
 }
 
 DWORD __stdcall PCThread::static_thread_start(void* param)

@@ -79,14 +79,14 @@ int PCSharedBuffer::init()
 	return 0;
 }
 
-bool PCSharedBuffer::add_item(int item)
+void PCSharedBuffer::add_item(int item)
 {
 	// lock mutex before adding item
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
 		std::cerr << "Error adding item: could not lock buffer\n";
 		PCTools::print_error();
-		return false;
+		return;
 	}
 
 	// if buffer is full, wait
@@ -97,13 +97,13 @@ bool PCSharedBuffer::add_item(int item)
 		if (wait_event_result != WAIT_OBJECT_0) {
 			std::cerr << "Error adding item: could not wait for write event\n";
 			PCTools::print_error();
-			return false;
+			return;
 		}
 		wait_result = WaitForSingleObject(mutex, INFINITE);
 		if (wait_result != WAIT_OBJECT_0) {
 			std::cerr << "Error adding item: could not lock buffer\n";
 			PCTools::print_error();
-			return false;
+			return;
 		}
 	}
 
@@ -116,7 +116,7 @@ bool PCSharedBuffer::add_item(int item)
 	}
 	// release mutex after add is finished
 	ReleaseMutex(mutex);
-	return true;
+	return;
 }
 
 int PCSharedBuffer::get_item()

@@ -17,7 +17,7 @@ public:
 
 	int init();
 
-	bool add_item(int item);
+	void add_item(int item);
 	int get_item();
 	int size() const;
 	bool is_full() const;
