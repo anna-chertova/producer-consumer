@@ -156,6 +156,7 @@
     <ClCompile Include="producer-consumer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="constants.h" />
     <ClInclude Include="pc_consumer.h" />
     <ClInclude Include="pc_producer.h" />
     <ClInclude Include="pc_shared_buffer.h" />

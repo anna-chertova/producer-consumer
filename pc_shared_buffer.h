@@ -7,6 +7,7 @@
 
 #include <queue>
 #include <windows.h>
+#include "constants.h"
 
 class PCSharedBuffer {
 
