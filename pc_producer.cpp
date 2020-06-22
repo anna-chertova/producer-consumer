@@ -19,12 +19,19 @@ unsigned long PCProducer::start()
 {
 	std::cout << "PCProducer::start() id = " << get_id() << "\n";
 	bool stop = is_stopped();
-	while (!stop) {		
-		int produced_item = generate_next();
-		buffer.add_item(produced_item);
-		std::cout << "Producer id = " << get_id() <<
-			" item = " << produced_item <<
-			" buffer size = " << buffer.size() << "\n";
+	bool success = false;
+	int cur_item = generate_next();
+	while (!stop) {
+		// if previously produced item was queued then generate next
+		if (success) {
+			cur_item = generate_next();
+		}
+		success = buffer.try_add_item(cur_item);
+		if (success) {
+			std::cout << "Producer id = " << get_id() <<
+				" item = " << cur_item <<
+				" buffer size = " << buffer.size() << "\n";
+		}
 		// check if we should stop the thread
 		stop = is_stopped();
 	}
