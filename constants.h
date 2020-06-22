@@ -8,5 +8,6 @@
 #define NUM_PRODUCERS 1
 #define NUM_CONSUMERS 1
 #define NUM_REPEATS 1
+#define SLEEP_TIME_MS 100
 #define WAIT_TIME_MS 20
 #define MAX_BUFFER_SIZE 1000

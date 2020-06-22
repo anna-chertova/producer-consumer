@@ -34,6 +34,7 @@ unsigned long PCProducer::start()
 		}
 		// check if we should stop the thread
 		stop = is_stopped();
+		Sleep(SLEEP_TIME_MS);
 	}
 	return 0;
 }
