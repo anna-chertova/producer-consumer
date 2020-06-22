@@ -19,6 +19,10 @@ unsigned long PCConsumer::start()
 	std::cout << "PCConsumer::start() id = " << get_id() << "\n";
 	bool stop = is_stopped();
 	while (!stop) {
+		int next_item = buffer.get_item();
+		std::cout << "Consumer id = " << get_id() <<
+			" item = " << next_item <<
+			" buffer size = " << buffer.size() << "\n";
 		stop = is_stopped();
 		Sleep(WAIT_TIME_MS);
 	}
