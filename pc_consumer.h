@@ -15,5 +15,5 @@ public:
 
 private:
 	virtual unsigned long start();
-	PCSharedBuffer buffer;
+	PCSharedBuffer& buffer;
 };

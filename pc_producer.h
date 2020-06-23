@@ -22,7 +22,7 @@ private:
 
 	int generate_next();
 
-	PCSharedBuffer buffer;
+	PCSharedBuffer& buffer;
 
 	// for producing random numbers
 	std::uniform_int_distribution<int> unif;
