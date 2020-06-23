@@ -18,13 +18,15 @@ unsigned long PCConsumer::start()
 {
 	std::cout << "PCConsumer::start() id = " << get_id() << "\n";
 	bool stop = is_stopped();
+	int cur_item(0);
 	while (!stop) {
-		int next_item = buffer.get_item();
-		std::cout << "Consumer id = " << get_id() <<
-			" item = " << next_item <<
-			" buffer size = " << buffer.size() << "\n";
+		if (buffer.try_get_item(cur_item)) {
+			std::cout << "Consumer id = " << get_id() <<
+				" item = " << cur_item <<
+				" buffer size = " << buffer.size() << "\n";
+		}
 		stop = is_stopped();
-		Sleep(WAIT_TIME_MS);
+		Sleep(SLEEP_TIME_MS);
 	}
 	return 0;
 }

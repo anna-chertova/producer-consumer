@@ -123,33 +123,37 @@ bool PCSharedBuffer::try_add_item(int item)
 	return true;
 }
 
-int PCSharedBuffer::get_item()
+bool PCSharedBuffer::try_get_item(int& item)
 {
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
 		std::cerr << "Error getting item: could not lock buffer\n";
 		PCTools::print_error();
-		return 0;
+		return false;
 	}
 
 	if (buffer.size() == 0) {
 		ReleaseMutex(mutex);
-		DWORD wait_event_result = WaitForSingleObject(read_event, INFINITE);
-		if (wait_event_result != WAIT_OBJECT_0) {
+		DWORD wait_event_result = WaitForSingleObject(read_event, WAIT_TIME_MS);
+		if (wait_event_result == WAIT_FAILED) {
 			std::cerr << "Error getting item: could not wait for read event\n";
 			PCTools::print_error();
-			return 0;
+			return false;
+		}
+		if (wait_event_result == WAIT_TIMEOUT) {
+			// time is out, try next time
+			return false;
 		}
 		wait_result = WaitForSingleObject(mutex, INFINITE);
 		if (wait_result != WAIT_OBJECT_0) {
 			std::cerr << "Error getting item: could not lock buffer\n";
 			PCTools::print_error();
-			return 0;
+			return false;
 		}
 	}
 
 	// avoid copying (in future this could be an object)
-	int item = std::move(buffer.front()); 
+	item = std::move(buffer.front()); 
 	buffer.pop();
 
 	// if buffer was full signal that buffer is ready to be used
@@ -161,7 +165,7 @@ int PCSharedBuffer::get_item()
 	}
 
 	ReleaseMutex(mutex);
-	return item;
+	return true;
 }
 
 int PCSharedBuffer::size() const
