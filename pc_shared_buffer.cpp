@@ -148,10 +148,12 @@ int PCSharedBuffer::get_item()
 		}
 	}
 
-	int item = std::move(buffer.front()); // avoid copying (in future this could be an object)
+	// avoid copying (in future this could be an object)
+	int item = std::move(buffer.front()); 
 	buffer.pop();
 
-	if (buffer.size() < MAX_BUFFER_SIZE) { // if buffer was full signal that buffer is ready to be used
+	// if buffer was full signal that buffer is ready to be used
+	if (buffer.size() < MAX_BUFFER_SIZE) { 
 		if (!SetEvent(write_event)) {
 			std::cerr << "Error signaling that buffer is not full\n";
 			PCTools::print_error();
