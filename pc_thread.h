@@ -9,11 +9,7 @@ class PCThread {
 
 public:
 
-	/// TODO: think about copy, move constructor and operator =
-	/// What should we do: forbid using them, define them or can leave
-	/// default versions to live on
 	PCThread();
-
 	virtual ~PCThread();
 
 	int init();
