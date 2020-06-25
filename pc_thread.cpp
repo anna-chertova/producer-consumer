@@ -7,6 +7,7 @@
 #include "pc_thread.h"
 #include "pc_tools.h"
 #include "constants.h"
+#include "pc_shared_ostream.h"
 
 PCThread::PCThread(): handle(nullptr), thread_id(0L), stop_event(nullptr)
 {
@@ -55,7 +56,7 @@ int PCThread::init()
 	
 	if (handle == nullptr) {
 		// Error creating thread
-		std::cerr << "Error creating thread\n";
+		shared_cerr << "Error creating thread\n";
 		PCTools::print_error();		
 		return 1;
 	}
@@ -69,7 +70,7 @@ int PCThread::init()
 
 	if (stop_event == nullptr) {
 		// Error creating stop evetn
-		std::cerr << "Error creating stop event\n";
+		shared_cerr << "Error creating stop event\n";
 		PCTools::print_error();
 		return 1;
 	}
@@ -81,13 +82,13 @@ int PCThread::wait()
 {
 	if (handle == nullptr)
 	{
-		std::cerr << "Thread is not initialized\n";
+		shared_cerr << "Thread is not initialized\n";
 		return 1;
 	}
 
 	DWORD result = WaitForSingleObject(handle, INFINITE);
 	if (result != WAIT_OBJECT_0) {
-		std::cerr << "Wait failed\n";
+		shared_cerr << "Wait failed\n";
 		return 1;
 	}
 	return 0;
@@ -104,7 +105,7 @@ void PCThread::stop()
 		return;
 
 	if (!SetEvent(stop_event)) {
-		std::cerr << "Error stopping thread = " << thread_id << "\n";
+		shared_cerr << "Error stopping thread = " << thread_id << "\n";
 	}
 }
 
@@ -115,7 +116,7 @@ bool PCThread::is_stopped()
 		return true;
 	}
 	if (wait_result == WAIT_FAILED) {
-		std::cerr << "Error waiting on stop event\n";
+		shared_cerr << "Error waiting on stop event\n";
 		PCTools::print_error();
 	}
 	return false;

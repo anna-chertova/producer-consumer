@@ -4,7 +4,7 @@
  */
 
 #include "pc_consumer.h"
-#include <iostream>
+#include "pc_shared_ostream.h"
 
 PCConsumer::PCConsumer(PCSharedBuffer& consume_buffer): buffer(consume_buffer)
 {
@@ -16,12 +16,12 @@ PCConsumer::~PCConsumer()
 
 unsigned long PCConsumer::start()
 {
-	std::cout << "PCConsumer::start() id = " << get_id() << "\n";
+	shared_cout << "PCConsumer::start() id = " << get_id() << "\n";
 	bool stop = is_stopped();
 	int cur_item(0);
 	while (!stop) {
 		if (buffer.try_get_item(cur_item)) {
-			std::cout << "Consumer id = " << get_id() <<
+			shared_cout << "Consumer id = " << get_id() <<
 				" item = " << cur_item <<
 				" buffer size = " << buffer.size() << "\n";
 		}

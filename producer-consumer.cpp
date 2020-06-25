@@ -9,6 +9,7 @@
 #include "pc_consumer.h"
 #include "pc_shared_buffer.h"
 #include "constants.h"
+#include "pc_shared_ostream.h"
 
 int main()
 {

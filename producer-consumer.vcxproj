@@ -151,6 +151,7 @@
     <ClCompile Include="pc_consumer.cpp" />
     <ClCompile Include="pc_producer.cpp" />
     <ClCompile Include="pc_shared_buffer.cpp" />
+    <ClCompile Include="pc_shared_ostream.cpp" />
     <ClCompile Include="pc_thread.cpp" />
     <ClCompile Include="pc_tools.cpp" />
     <ClCompile Include="producer-consumer.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="pc_consumer.h" />
     <ClInclude Include="pc_producer.h" />
     <ClInclude Include="pc_shared_buffer.h" />
+    <ClInclude Include="pc_shared_ostream.h" />
     <ClInclude Include="pc_thread.h" />
     <ClInclude Include="pc_tools.h" />
   </ItemGroup>

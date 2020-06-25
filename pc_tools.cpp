@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <iostream>
 #include "pc_tools.h"
+#include "pc_shared_ostream.h"
 
 void PCTools::print_error()
 {
@@ -22,7 +23,7 @@ void PCTools::print_error()
 		NULL);
 
 	std::string message(message_buf, size);
-	std::cerr << message;
+	shared_cerr << message;
 	//Free the buffer.
 	LocalFree(message_buf);
 }

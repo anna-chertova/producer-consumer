@@ -7,6 +7,7 @@
 #include <iostream>
 #include "pc_shared_buffer.h"
 #include "pc_tools.h"
+#include "pc_shared_ostream.h"
 
 PCSharedBuffer::PCSharedBuffer(): mutex(nullptr), read_event(nullptr), write_event(nullptr)
 {
@@ -47,7 +48,7 @@ int PCSharedBuffer::init()
 	);
 
 	if (!mutex) {
-		std::cerr << "Error creating mutex for shared buffer\n";
+		shared_cerr << "Error creating mutex for shared buffer\n";
 		PCTools::print_error();
 		return 1;
 	}
@@ -59,7 +60,7 @@ int PCSharedBuffer::init()
 	);
 
 	if (!read_event) {
-		std::cerr << "Error creating read event for shared buffer\n";
+		shared_cerr << "Error creating read event for shared buffer\n";
 		PCTools::print_error();
 		return 1;
 	}
@@ -71,7 +72,7 @@ int PCSharedBuffer::init()
 	);
 
 	if (!write_event) {
-		std::cerr << "Error creating write event for shared buffer\n";
+		shared_cerr << "Error creating write event for shared buffer\n";
 		PCTools::print_error();
 		return 1;
 	}
@@ -84,7 +85,7 @@ bool PCSharedBuffer::try_add_item(int item)
 	// lock mutex before adding item
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
-		std::cerr << "Error adding item: could not lock buffer\n";
+		shared_cerr << "Error adding item: could not lock buffer\n";
 		PCTools::print_error();
 		return false;
 	}
@@ -95,7 +96,7 @@ bool PCSharedBuffer::try_add_item(int item)
 
 		DWORD wait_event_result = WaitForSingleObject(write_event, WAIT_TIME_MS);
 		if (wait_event_result == WAIT_FAILED) {
-			std::cerr << "Error adding item: could not wait for write event\n";
+			shared_cerr << "Error adding item: could not wait for write event\n";
 			PCTools::print_error();
 			return false;
 		}
@@ -105,7 +106,7 @@ bool PCSharedBuffer::try_add_item(int item)
 		}
 		wait_result = WaitForSingleObject(mutex, INFINITE);
 		if (wait_result != WAIT_OBJECT_0) {
-			std::cerr << "Error adding item: could not lock buffer\n";
+			shared_cerr << "Error adding item: could not lock buffer\n";
 			PCTools::print_error();
 			return false;
 		}
@@ -114,7 +115,7 @@ bool PCSharedBuffer::try_add_item(int item)
 	buffer.push(item);
 	if (buffer.size() == 1) { // if buffer was empty signal that buffer is ready to be used
 		if (!SetEvent(read_event)) {
-			std::cerr << "Error signaling that buffer is not empty\n";
+			shared_cerr << "Error signaling that buffer is not empty\n";
 			PCTools::print_error();
 		}
 	}
@@ -127,7 +128,7 @@ bool PCSharedBuffer::try_get_item(int& item)
 {
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
-		std::cerr << "Error getting item: could not lock buffer\n";
+		shared_cerr << "Error getting item: could not lock buffer\n";
 		PCTools::print_error();
 		return false;
 	}
@@ -136,7 +137,7 @@ bool PCSharedBuffer::try_get_item(int& item)
 		ReleaseMutex(mutex);
 		DWORD wait_event_result = WaitForSingleObject(read_event, WAIT_TIME_MS);
 		if (wait_event_result == WAIT_FAILED) {
-			std::cerr << "Error getting item: could not wait for read event\n";
+			shared_cerr << "Error getting item: could not wait for read event\n";
 			PCTools::print_error();
 			return false;
 		}
@@ -146,7 +147,7 @@ bool PCSharedBuffer::try_get_item(int& item)
 		}
 		wait_result = WaitForSingleObject(mutex, INFINITE);
 		if (wait_result != WAIT_OBJECT_0) {
-			std::cerr << "Error getting item: could not lock buffer\n";
+			shared_cerr << "Error getting item: could not lock buffer\n";
 			PCTools::print_error();
 			return false;
 		}
@@ -159,7 +160,7 @@ bool PCSharedBuffer::try_get_item(int& item)
 	// if buffer was full signal that buffer is ready to be used
 	if (buffer.size() < MAX_BUFFER_SIZE) { 
 		if (!SetEvent(write_event)) {
-			std::cerr << "Error signaling that buffer is not full\n";
+			shared_cerr << "Error signaling that buffer is not full\n";
 			PCTools::print_error();
 		}
 	}
@@ -172,7 +173,7 @@ int PCSharedBuffer::size() const
 {
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
-		std::cerr << "Error getting size: could not lock buffer\n";
+		shared_cerr << "Error getting size: could not lock buffer\n";
 		PCTools::print_error();
 		return -1;
 	}
@@ -185,7 +186,7 @@ bool PCSharedBuffer::is_full() const
 {
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
-		std::cerr << "Error checking if buffer is full: could not lock buffer\n";
+		shared_cerr << "Error checking if buffer is full: could not lock buffer\n";
 		PCTools::print_error();
 		return true;
 	}

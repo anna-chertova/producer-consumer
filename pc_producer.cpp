@@ -4,7 +4,7 @@
  */
 
 #include "pc_producer.h"
-#include <iostream>
+#include "pc_shared_ostream.h"
 
 PCProducer::PCProducer(PCSharedBuffer& product_buffer): buffer(product_buffer), engine(rd())
 {
@@ -17,7 +17,7 @@ PCProducer::~PCProducer()
 
 unsigned long PCProducer::start()
 {
-	std::cout << "PCProducer::start() id = " << get_id() << "\n";
+	shared_cout << "PCProducer::start() id = " << get_id() << "\n";
 	bool stop = is_stopped();
 	bool success = false;
 	int cur_item = generate_next();
@@ -28,7 +28,7 @@ unsigned long PCProducer::start()
 		}
 		success = buffer.try_add_item(cur_item);
 		if (success) {
-			std::cout << "Producer id = " << get_id() <<
+			shared_cout << "Producer id = " << get_id() <<
 				" item = " << cur_item <<
 				" buffer size = " << buffer.size() << "\n";
 		}
