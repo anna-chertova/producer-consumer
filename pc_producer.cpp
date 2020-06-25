@@ -29,8 +29,8 @@ unsigned long PCProducer::start()
 		success = buffer.try_add_item(cur_item);
 		if (success) {
 			shared_cout << "Producer id = " << get_id() <<
-				" item = " << cur_item <<
-				" buffer size = " << buffer.size() << "\n";
+				"\titem = " << cur_item <<
+				"\t\tbuffer size = " << buffer.size() << "\n";
 		}
 		// check if we should stop the thread
 		stop = is_stopped();

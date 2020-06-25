@@ -22,8 +22,8 @@ unsigned long PCConsumer::start()
 	while (!stop) {
 		if (buffer.try_get_item(cur_item)) {
 			shared_cout << "Consumer id = " << get_id() <<
-				" item = " << cur_item <<
-				" buffer size = " << buffer.size() << "\n";
+				"\titem = " << cur_item <<
+				"\t\tbuffer size = " << buffer.size() << "\n";
 		}
 		stop = is_stopped();
 		Sleep(SLEEP_TIME_MS);
