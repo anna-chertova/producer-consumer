@@ -18,7 +18,7 @@ public:
 
 private:
 
-	virtual unsigned long start();
+	virtual unsigned long start() override;
 
 	int generate_next();
 
