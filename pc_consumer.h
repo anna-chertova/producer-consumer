@@ -14,6 +14,6 @@ public:
 	virtual ~PCConsumer();
 
 private:
-	virtual unsigned long start();
+	virtual unsigned long start() override;
 	PCSharedBuffer& buffer;
 };
