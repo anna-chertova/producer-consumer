@@ -5,6 +5,6 @@
  */
 
 namespace PCTools {
-	// Prints result of GetLastError()
+	// Prints result of GetLastError() to shared_cerr
 	void print_error();
 }

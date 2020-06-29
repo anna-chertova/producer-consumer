@@ -1,6 +1,6 @@
 /*
  * pc_shared_ofstream.cpp - this source file contains shared ofstream
- *						to synchronize output of several threads to console
+ * to synchronize output of several threads to console
  * (c) 2020 Anna Chertova
  */
 

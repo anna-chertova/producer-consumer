@@ -1,6 +1,6 @@
 /*
- * pc_shared_buffer.cpp - this is a source file for my implementation for shared buffer
- * (this a thread-safe buffer)
+ * pc_shared_buffer.cpp - this is a source file for shared (synchronized)
+ * buffer implementation
  * (c) 2020 Anna Chertova
  */
 
@@ -10,8 +10,10 @@
 #include "pc_tools.h"
 #include "pc_shared_ostream.h"
 
-PCSharedBuffer::PCSharedBuffer(): mutex(nullptr), read_event(nullptr), write_event(nullptr)
+PCSharedBuffer::PCSharedBuffer(): mutex(nullptr), read_event(nullptr),
+	write_event(nullptr)
 {
+	init();
 }
 
 PCSharedBuffer::~PCSharedBuffer()
@@ -40,9 +42,6 @@ void PCSharedBuffer::cleanup()
 
 int PCSharedBuffer::init()
 {
-	// to avoid leaks in case of re-initialization
-	cleanup();
-	
 	mutex = CreateMutex(NULL,	// default security attributes
 		false,					// initially not owned
 		NULL					// unnamed
@@ -91,11 +90,12 @@ bool PCSharedBuffer::try_add_item(int item)
 		return false;
 	}
 
-	// if buffer is full, wait
+  // if buffer is full, wait
 	while (buffer.size() == MAX_BUFFER_SIZE) {
 		DWORD wait_event_result = WaitForSingleObject(write_event, WAIT_TIME_MS);
 		if (wait_event_result == WAIT_FAILED) {
-			shared_cerr << "Error adding item: could not wait for write event\n";
+			shared_cerr <<
+				"Error adding item: could not wait for write event\n";
 			PCTools::print_error();
 			ReleaseMutex(mutex);
 			return false;
@@ -110,7 +110,8 @@ bool PCSharedBuffer::try_add_item(int item)
 	assert(buffer.size() < MAX_BUFFER_SIZE);
 
 	buffer.push(item);
-	if (buffer.size() == 1) { // if buffer was empty signal that buffer is ready to be used
+	// if buffer was empty signal that buffer is ready to be used
+	if (buffer.size() == 1) {
 		if (!SetEvent(read_event)) {
 			shared_cerr << "Error signaling that buffer is not empty\n";
 			PCTools::print_error();
@@ -123,6 +124,7 @@ bool PCSharedBuffer::try_add_item(int item)
 
 bool PCSharedBuffer::try_get_item(int& item)
 {
+	// lock before getting item
 	DWORD wait_result = WaitForSingleObject(mutex, INFINITE);
 	if (wait_result != WAIT_OBJECT_0) {
 		shared_cerr << "Error getting item: could not lock buffer\n";
@@ -130,7 +132,8 @@ bool PCSharedBuffer::try_get_item(int& item)
 		return false;
 	}
 
-	while (buffer.empty()) {
+	// if buffer is empty wait
+		while (buffer.empty()) {
 		DWORD wait_event_result = WaitForSingleObject(read_event, WAIT_TIME_MS);
 		if (wait_event_result == WAIT_FAILED) {
 			shared_cerr << "Error getting item: could not wait for read event\n";
