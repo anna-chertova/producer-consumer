@@ -1,5 +1,5 @@
 /*
- * pc_thread.cpp - this is an implementation file for my threads
+ * pc_thread.cpp - this is an source file for basic threads implementation
  * (c) 2020 Anna Chertova
  */
 #include <iostream>
@@ -66,7 +66,7 @@ int PCThread::init()
 	);
 
 	if (stop_event == nullptr) {
-		// Error creating stop evetn
+		// Error creating stop event
 		shared_cerr << "Error creating stop event\n";
 		PCTools::print_error();
 		return 1;

@@ -30,7 +30,6 @@ int main()
         // This buffer contains "tasks".
         // For now those are simple integer numbers.
         PCSharedBuffer buffer;
-        buffer.init();
 
         std::vector<std::unique_ptr<PCProducer>> producers;
         std::vector<std::unique_ptr<PCConsumer>> consumers;

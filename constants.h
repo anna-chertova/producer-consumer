@@ -10,7 +10,7 @@
 // number of consumer threads
 #define NUM_CONSUMERS 2
 // number of program calls
-#define NUM_REPEATS 5
+#define NUM_REPEATS 1
 // ms passed to Sleep call in the end of each cycle of worker thread
 // (in order to yield time slice to others)
 #define SLEEP_TIME_MS 100
