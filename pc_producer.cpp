@@ -1,12 +1,13 @@
 /*
- * pc_producer - this is a source file for my implementation for producer threads
+ * pc_producer - this is a source file for producer thread implementation
  * (c) 2020 Anna Chertova
  */
 
 #include "pc_producer.h"
 #include "pc_shared_ostream.h"
 
-PCProducer::PCProducer(PCSharedBuffer& product_buffer): buffer(product_buffer), engine(rd())
+PCProducer::PCProducer(PCSharedBuffer& product_buffer):
+	buffer(product_buffer), engine(rd())
 {
 	rnd = std::bind(unif, engine);
 }
@@ -21,6 +22,7 @@ unsigned long PCProducer::start()
 	bool stop = is_stopped();
 	bool success = false;
 	int cur_item = generate_next();
+
 	while (!stop) {
 		Sleep(PRODUCER_DELAY_MS);
 		// if previously produced item was queued then generate next
@@ -35,6 +37,7 @@ unsigned long PCProducer::start()
 		}
 		// check if we should stop the thread
 		stop = is_stopped();
+		// yield time slice to others
 		Sleep(SLEEP_TIME_MS);
 	}
 	return 0;

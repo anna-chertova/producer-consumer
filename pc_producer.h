@@ -1,5 +1,5 @@
 /*
- * pc_producer - this is a header file for my implementation for producer threads
+ * pc_producer - this is a header file for producer thread implementation
  * (c) 2020 Anna Chertova
  */
 
@@ -9,10 +9,14 @@
 #include "pc_thread.h"
 #include "pc_shared_buffer.h"
 
+// Producer thread generates random numbers
+// and puts them into shared buffer
+// On each step delay can be set by PRODUCER_DELAY_MS
 class PCProducer : public PCThread {
 
 public:
 
+	// Intitializes thread & random number generatior
 	PCProducer(PCSharedBuffer &product_buffer);
 	virtual ~PCProducer();
 

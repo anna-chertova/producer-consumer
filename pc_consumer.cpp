@@ -1,12 +1,13 @@
 /*
- * pc_consumer.cpp - this is a source file for my implementation for consumer thread
+ * pc_consumer.cpp - this is a source file consumer thread implementation
  * (c) 2020 Anna Chertova
  */
 
 #include "pc_consumer.h"
 #include "pc_shared_ostream.h"
 
-PCConsumer::PCConsumer(PCSharedBuffer& consume_buffer): buffer(consume_buffer)
+PCConsumer::PCConsumer(PCSharedBuffer& consume_buffer):
+	buffer(consume_buffer)
 {
 }
 
