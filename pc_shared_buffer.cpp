@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <cassert>
 #include "pc_shared_buffer.h"
 #include "pc_tools.h"
 #include "pc_shared_ostream.h"
@@ -89,31 +90,24 @@ bool PCSharedBuffer::try_add_item(int item)
 		return false;
 	}
 
-	// if buffer is full wait
-	if (buffer.size() == MAX_BUFFER_SIZE) {
-		ReleaseMutex(mutex);
-
-		DWORD wait_event_result = WaitForSingleObject(
-			write_event,
-			WAIT_TIME_MS);
-
+  // if buffer is full, wait
+	while (buffer.size() == MAX_BUFFER_SIZE) {
+		DWORD wait_event_result = WaitForSingleObject(write_event, WAIT_TIME_MS);
 		if (wait_event_result == WAIT_FAILED) {
 			shared_cerr <<
 				"Error adding item: could not wait for write event\n";
 			PCTools::print_error();
+			ReleaseMutex(mutex);
 			return false;
 		}
 		if (wait_event_result == WAIT_TIMEOUT) {
 			// time is out, try next time
-			return false;
-		}
-		wait_result = WaitForSingleObject(mutex, INFINITE);
-		if (wait_result != WAIT_OBJECT_0) {
-			shared_cerr << "Error adding item: could not lock buffer\n";
-			PCTools::print_error();
+			ReleaseMutex(mutex);
 			return false;
 		}
 	}
+
+	assert(buffer.size() < MAX_BUFFER_SIZE);
 
 	buffer.push(item);
 	// if buffer was empty signal that buffer is ready to be used
@@ -139,35 +133,33 @@ bool PCSharedBuffer::try_get_item(int& item)
 	}
 
 	// if buffer is empty wait
-	if (buffer.size() == 0) {
-		ReleaseMutex(mutex);
-		DWORD wait_event_result = WaitForSingleObject(
-			read_event,
-			WAIT_TIME_MS);
-
+		while (buffer.empty()) {
+		DWORD wait_event_result = WaitForSingleObject(read_event, WAIT_TIME_MS);
 		if (wait_event_result == WAIT_FAILED) {
 			shared_cerr << "Error getting item: could not wait for read event\n";
 			PCTools::print_error();
+			ReleaseMutex(mutex);
 			return false;
 		}
 		if (wait_event_result == WAIT_TIMEOUT) {
 			// time is out, try next time
-			return false;
-		}
-		wait_result = WaitForSingleObject(mutex, INFINITE);
-		if (wait_result != WAIT_OBJECT_0) {
-			shared_cerr << "Error getting item: could not lock buffer\n";
-			PCTools::print_error();
+			ReleaseMutex(mutex);
 			return false;
 		}
 	}
+
+	assert(!buffer.empty());
+	bool signal_write_event = (buffer.size() == MAX_BUFFER_SIZE);
+	assert(buffer.size() <= MAX_BUFFER_SIZE);
 
 	// avoid copying (in future this could be an object)
 	item = std::move(buffer.front()); 
 	buffer.pop();
 
+	assert(buffer.size() < MAX_BUFFER_SIZE);
+
 	// if buffer was full signal that buffer is ready to be used
-	if (buffer.size() < MAX_BUFFER_SIZE) { 
+	if (signal_write_event) { 
 		if (!SetEvent(write_event)) {
 			shared_cerr << "Error signaling that buffer is not full\n";
 			PCTools::print_error();

@@ -22,6 +22,7 @@ unsigned long PCProducer::start()
 	bool success = false;
 	int cur_item = generate_next();
 	while (!stop) {
+		Sleep(PRODUCER_DELAY_MS);
 		// if previously produced item was queued then generate next
 		if (success) {
 			cur_item = generate_next();
