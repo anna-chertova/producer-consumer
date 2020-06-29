@@ -20,6 +20,7 @@ unsigned long PCConsumer::start()
 	bool stop = is_stopped();
 	int cur_item(0);
 	while (!stop) {
+		Sleep(CONSUMER_DELAY_MS);
 		if (buffer.try_get_item(cur_item)) {
 			shared_cout << "Consumer id = " << get_id() <<
 				"\titem = " << cur_item <<
