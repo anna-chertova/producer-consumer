@@ -12,7 +12,6 @@ public:
 	PCThread();
 	virtual ~PCThread();
 
-	int init();
 	int wait();
 	unsigned long get_id() const;
 	void stop();
@@ -28,6 +27,7 @@ private:
 	DWORD thread_id;
 	HANDLE stop_event;
 	
+	int init();
 	void cleanup();
 
 	static unsigned long __stdcall static_thread_start(void* param);

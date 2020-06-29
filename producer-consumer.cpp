@@ -1,5 +1,7 @@
 ﻿/* 
  * producer-consumer.cpp: this file contains main func
+ * This application implements Producer/Consumer problem
+ * Using WINAPI thread functions
  * (c) 2020 Anna Chertova
  */
 
@@ -14,12 +16,13 @@
 
 int main()
 {
-    // allow usage of Cyrillic symbols in console
+    // Set environment's default locale 
+    // (to be able to use Cyrillic symbols in console)
     setlocale(0, "");
 
     std::cout << "\nThis program demonstrates producer/consumer problem solution\n";
-    std::cout << "Enter any key to stop the program\n";
-    std::cout << "Number of program calls: " << NUM_REPEATS << "\n\n";
+    std::cout << "Press Enter to run next set of producers/consumers\n";
+    std::cout << "Number of program calls: " << NUM_REPEATS << "\n";
 
     for (int n = 0; n < NUM_REPEATS; ++n) {
 
@@ -35,22 +38,19 @@ int main()
         // Producer worker threads that generate random integer numbers.
         for (int i = 0; i < NUM_PRODUCERS; i++) {
             auto p(std::make_unique<PCProducer>(buffer));
-            p->init();
             producers.push_back(std::move(p));
         }
 
         // Consumer worker threads. Read integer numbers and print them to console.
         for (int i = 0; i < NUM_CONSUMERS; i++) {
             auto c(std::make_unique<PCConsumer>(buffer));
-            c->init();
             consumers.push_back(std::move(c));
         }
 
         // Main thread waits for user input
-        char a;
-        std::cin >> a;
+        std::cin.get();
 
-        // Send producer and consumer threads stop command
+        // Send producer and consumer threads stop event
         for (auto p = producers.begin(); p != producers.end(); ++p) {
             p->get()->stop();
         }
@@ -58,7 +58,7 @@ int main()
             c->get()->stop();
         }
 
-        // Wait threads to finalyze their work
+        // Wait threads to finalize their work
         for (auto p = producers.begin(); p != producers.end(); ++p) {
             p->get()->wait();
         }

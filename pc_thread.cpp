@@ -11,7 +11,7 @@
 
 PCThread::PCThread(): handle(nullptr), thread_id(0L), stop_event(nullptr)
 {
-	
+	init();
 }
 
 PCThread::~PCThread()
@@ -42,9 +42,6 @@ void PCThread::cleanup()
 
 int PCThread::init()
 {
-	// to avoid leaks in case of re-initialization
-	cleanup();
-
 	handle = CreateThread(
 		nullptr,				// default security attributes
 		0,						// default stack size
@@ -52,12 +49,12 @@ int PCThread::init()
 		(void*)this,			// arguments to thread function
 		0,						// default creation flags
 		&thread_id				// return thread id
-		);
-	
+	);
+
 	if (handle == nullptr) {
 		// Error creating thread
 		shared_cerr << "Error creating thread\n";
-		PCTools::print_error();		
+		PCTools::print_error();
 		return 1;
 	}
 
